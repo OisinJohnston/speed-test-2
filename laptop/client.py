@@ -85,12 +85,21 @@ def main():
     logger.info('opening and monitoring microbit port')
     ser_micro.open()
     while 1:
+        try:
+            mode = int(input("How many players? (1/2): ")) -1
+            assert mode in (0,1)
+        except:
+            continue
+
         name = input("please enter your name: ")
         register(name)
 
         ser_micro.write('ready\n'.encode('utf-8'))
         logger.info("laptop -> microbit : 'ready'")
-
+        
+        ser_micro.write('mode:{numplayers-1}\n'.encode('utf-8'))
+        logger.info("laptop -> microbit : 'mode:{numplayers-1}'")
+        
         resp = readline(ser_micro)
         logger.info(f"microbit -> laptop : '{resp}'")
 
@@ -107,6 +116,7 @@ def main():
             ser_micro.write('badresp'.encode('utf-8'))
             logger.info("laptop -> microbit : 'badresp'")
             continue
+        if 
 
         time_taken = time() - start_time
         submit(name, time_taken)
