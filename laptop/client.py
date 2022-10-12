@@ -79,7 +79,7 @@ def main():
     logger.info('looking for microbit')
     ser_micro = find_comport(PID_MICROBIT, VID_MICROBIT, 115200)
     if not ser_micro:
-        logger.warn('microbit not found')
+        logger.fatal('microbit not found')
         return
 
     logger.info('opening and monitoring microbit port')
