@@ -13,7 +13,7 @@ PID_MICROBIT = 516
 VID_MICROBIT = 3368
 TIMEOUT = 0.1
 
-BASE_URL = 'http://localhost:9000'
+BASE_URL = 'https://guessinggame.qwrky.dev/speed'
 HEADERS = {'Content-type': 'application/json'}
 
 # logging stuff

@@ -66,7 +66,7 @@ class DatabaseHandler():
                     userone   INTEGER NOT NULL,
                     usertwo   INTEGER NOT NULL,
                     winner    INTEGER NOT NULL,
-                    timetaken INTEGER NOT NULL,
+                    winnerscr INTEGER NOT NULL,
                     FOREIGN KEY (userone) REFERENCES users(id),
                     FOREIGN KEY (usertwo) REFERENCES users(id),
                     FOREIGN KEY (winner)  REFERENCES users(id)
@@ -113,7 +113,7 @@ class DatabaseHandler():
                 "timetaken": result[2]
             })
         return response
-    
+
     def get_twoentries(self):
         cur = self.get_cursor()
         res = cur.execute("SELECT * FROM twoentries ORDER BY timetaken ASC;", [])
@@ -124,7 +124,7 @@ class DatabaseHandler():
                 "player 1": self.get_username(result[1]),
                 "player 2": self.get_username(result[2]),
                 "winner": self.get_username(result[3]),
-                "timetaken": result[4]
+                "winnerscr": result[4]
             })
         return response
 
@@ -145,12 +145,12 @@ class DatabaseHandler():
         )
         self.commit()
 
-    def add_twoentry(self, players, winner, timetaken):
+    def add_twoentry(self, players, winner, winnerscore):
         player1, player2 = players
         cur = self.get_cursor()
         cur.execute(
-                    "INSERT INTO twoentries(userone, usertwo, winner, timetaken) VALUES (?, ?, ?, ?) ",
-                    (player1, player2, winner, timetaken)
+                    "INSERT INTO twoentries(userone, usertwo, winner, winnerscr) VALUES (?, ?, ?, ?) ",
+                    (player1, player2, winner, winnerscore)
                 )
         self.commit()
 
@@ -196,8 +196,8 @@ async def add_twoentry(request):
 
     players = [db.get_user_id(name) for name in json["names"]]
     winner = db.get_user_id(json["winner"])
-    timetaken = json["timetaken"]
-    db.add_twoentry(players, winner, timetaken)
+    winnerscr = json["winnerscr"]
+    db.add_twoentry(players, winner, winnerscr)
     return web.HTTPCreated()
 
 @routes.get('/api/singleentries')
