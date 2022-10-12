@@ -47,8 +47,11 @@ logger.addHandler(fh)
 def register(username):
     requests.post(BASE_URL + '/api/users', data = json.dumps({'name': username}), headers = HEADERS)
 
-def submit(username, time_taken):
-    requests.post(BASE_URL + '/api/entries', data = json.dumps({'name': username, 'timetaken': time_taken}), headers = HEADERS)
+def submitsingle(username, time_taken):
+    requests.post(BASE_URL + '/api/singleentries', data = json.dumps({'name': username, 'timetaken': time_taken}), headers = HEADERS)
+
+def submittwo(names, winner, time_taken):
+    requests.post(BASE_URL + '/api/twoentries', data = json.dumbs({'names': names, 'winner': winner, 'time_taken': time_taken}), headers = HEADERS)
 
 def find_comport(pid, vid, baud):
     """returns a serial port"""
@@ -90,9 +93,13 @@ def main():
             assert mode in (0,1)
         except:
             continue
-
-        name = input("please enter your name: ")
-        register(name)
+        if mode == 0:
+            name = input("please enter your name: ")
+            register(name)
+        elif mode == 1:
+            names = [input("please enter the first name: "), input("please enter the second name")]
+            for name in names:
+                register(name)
 
         ser_micro.write('ready\n'.encode('utf-8'))
         logger.info("laptop -> microbit : 'ready'")
@@ -116,10 +123,15 @@ def main():
             ser_micro.write('badresp'.encode('utf-8'))
             logger.info("laptop -> microbit : 'badresp'")
             continue
-        if 
-
+        
         time_taken = time() - start_time
-        submit(name, time_taken)
+
+        if mode == 1:
+            winnerindex = int(readline(ser_micro).split(":")[1].strip())
+            winner = names[winnerindex]
+        
+        else:
+            submitsingle(name, time_taken)
 
 
 

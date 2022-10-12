@@ -55,12 +55,22 @@ class DatabaseHandler():
                            userid INTEGER PRIMARY KEY,
                            name TEXT NOT NULL UNIQUE
                        );""")
-        cursor.execute("""CREATE TABLE IF NOT EXISTS entries(
+        cursor.execute("""CREATE TABLE IF NOT EXISTS singleentries(
                             entryid    INTEGER PRIMARY KEY,
                             user       INTEGER NOT NULL,
                             timetaken  INTEGER NOT NULL,
                             FOREIGN KEY (user) REFERENCES users(id)
                        );""")
+        cursor.execute("""CREATE TABLE IF NOT EXISTS twoentries(
+                    entryid   INTEGER NOT NULL,
+                    userone   INTEGER NOT NULL,
+                    usertwo   INTEGER NOT NULL,
+                    winner    INTEGER NOT NULL,
+                    timetaken INTEGER NOT NULL,
+                    FOREIGN KEY (userone) REFERENCES users(id),
+                    FOREIGN KEY (usertwo) REFERENCES users(id),
+                    FOREIGN KEY (winner)  REFERENCES users(id)
+                );"""
         self.commit()
 
     def __del__(self):
@@ -89,9 +99,9 @@ class DatabaseHandler():
         res = cur.execute("SELECT name FROM users WHERE userid=?;", (userid,))
         return res.fetchall()[0][0]
 
-    def get_entries(self):
+    def get_singleentries(self):
         cur = self.get_cursor()
-        res = cur.execute("SELECT * FROM entries ORDER BY timetaken ASC;", [])
+        res = cur.execute("SELECT * FROM singleentries ORDER BY timetaken ASC;", [])
         response = []
         for result in res.fetchall():
             response.append({
@@ -103,6 +113,19 @@ class DatabaseHandler():
                 "timetaken": result[2]
             })
         return response
+    
+    def get_twoentries(self):
+        cur = self.get_cursor()
+        res = cur.execute("SELECT * FROM twoentries ORDER BY timetaken ASC;", [])
+        response = []
+        for result in res.fetchall():
+            response.append({
+                "entryid": result[0],
+                "player 1": self.get_username(result[1]),
+                "player 2": self.get_username(result[2]),
+                "winner": self.get_username(result[3]),
+                "timetaken": result[4]
+            })
 
 
     def add_user(self, username):

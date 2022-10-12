@@ -1,8 +1,8 @@
 
 
 document.addEventListener("DOMContentLoaded", () => {
-	let restable = document.getElementById("results");
-	fetch(url = "/api/entries", {
+	let restable = document.getElementById("singleresults");
+	fetch(url = "/api/singleentries", {
 		method: 'GET'
 	}).then(async function(response) {
 		var resp = await response.json();
@@ -20,6 +20,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         }
     })
+	restable = document.getElementById("tworesults");
+	fetch(url = "/api/twoentries", {method:"GET"}).then(async function(response) {
+		var resp = await response.json();
+		console.log(resp)
+		for (var i = 0; i<resp.length; i++) {
+			var item = resp[i]
+			var row = restable.insertRow(-1);
+			row.insertCell(0).innerHTML = i+1;
+			row.insertCell(1).innerHTML = item["Player	
+		}
+	})
+
 })
 
 
