@@ -28,7 +28,10 @@ document.addEventListener("DOMContentLoaded", () => {
 			var item = resp[i]
 			var row = restable.insertRow(-1);
 			row.insertCell(0).innerHTML = i+1;
-			row.insertCell(1).innerHTML = item["Player	
+			row.insertCell(1).innerHTML = item["player 1"]
+			row.insertCell(2).innerHTML = item["player 2"]
+			row.insertCell(3).innerHTML = item["winner"]
+			row.insertCell(4).innerHTML = item["timetaken"]
 		}
 	})
 

@@ -70,7 +70,7 @@ class DatabaseHandler():
                     FOREIGN KEY (userone) REFERENCES users(id),
                     FOREIGN KEY (usertwo) REFERENCES users(id),
                     FOREIGN KEY (winner)  REFERENCES users(id)
-                );"""
+                );""")
         self.commit()
 
     def __del__(self):
@@ -126,6 +126,7 @@ class DatabaseHandler():
                 "winner": self.get_username(result[3]),
                 "timetaken": result[4]
             })
+        return response
 
 
     def add_user(self, username):
@@ -136,12 +137,21 @@ class DatabaseHandler():
         self.commit()
         return True
 
-    def add_entry(self, userid, timetaken):
+    def add_singleentry(self, userid, timetaken):
         cur = self.get_cursor()
         cur.execute(
-            "INSERT INTO entries(user, timetaken) VALUES (?, ?);",
+            "INSERT INTO singleentries(user, timetaken) VALUES (?, ?);",
             (userid, timetaken)
         )
+        self.commit()
+
+    def add_twoentry(self, players, winner, timetaken):
+        player1, player2 = players
+        cur = self.get_cursor()
+        cur.execute(
+                    "INSERT INTO singleentries(userone, usertwo, winner, timetaken) VALUES (?, ?, ?, ?) ",
+                    (player1, player2, winner, timetaken)
+                )
         self.commit()
 
 
@@ -164,7 +174,7 @@ async def add_user(request):
     else:
         return web.HTTPConflict()
 
-@routes.post('/api/entries')
+@routes.post('/api/singleentries')
 async def add_entry(request):
     db = request.app["database"]
     json = await request.json()
@@ -176,16 +186,33 @@ async def add_entry(request):
 
     timetaken = json["timetaken"]
 
-    db.add_entry(userid, timetaken)
+    db.add_singleentry(userid, timetaken)
     return web.HTTPCreated()
 
-@routes.get('/api/entries')
-async def get_entries(request):
+@routes.post('/api/twoentries')
+async def add_entry(request):
     db = request.app["database"]
-    resp = db.get_entries()
+    json = await request.json()
+
+    players = [db.get_user_id(name) for name in json["names"]]
+    winner = db.get_user_id(json["winner"])
+    timetaken = json["time_taken"]
+    db.add_twoeentry(players, winner, timetaken)
+    return web.HTTPCreated()
+
+@routes.get('/api/singleentries')
+async def get_singleentries(request):
+    db = request.app["database"]
+    resp = db.get_singleentries()
     logger.info(resp)
     return web.json_response(resp)
 
+@routes.get('/api/twoentries')
+async def get_twoentries(request):
+    db = request.app["database"]
+    resp = db.get_twoentries()
+    logger.info(resp)
+    return web.json_response(resp)
 
 @web.middleware
 async def static_server(request, handler):

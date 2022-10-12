@@ -51,7 +51,7 @@ def submitsingle(username, time_taken):
     requests.post(BASE_URL + '/api/singleentries', data = json.dumps({'name': username, 'timetaken': time_taken}), headers = HEADERS)
 
 def submittwo(names, winner, time_taken):
-    requests.post(BASE_URL + '/api/twoentries', data = json.dumbs({'names': names, 'winner': winner, 'time_taken': time_taken}), headers = HEADERS)
+    requests.post(BASE_URL + '/api/twoentries', data = json.dumps({'names': names, 'winner': winner, 'time_taken': time_taken}), headers = HEADERS)
 
 def find_comport(pid, vid, baud):
     """returns a serial port"""
