@@ -9,18 +9,17 @@ shape = 0
 timer = 0
 shape_index = 0
 shapes = [IconNames.DIAMOND,
-    IconNames.HEART,
     IconNames.SQUARE,
     IconNames.TRIANGLE]
-inputs = [Button.A, Button.B, TouchPin.P0, TouchPin.P2]
-arebuttons = [True, True, False, False]
+inputs = [TouchPin.P1, TouchPin.P0, TouchPin.P2]
+arebuttons = [False, False, False]
 
 def on_forever():
     global shape_index, gameOver
     while True:
         if serial.read_until(serial.delimiters(Delimiters.NEW_LINE)) == "ready":
             break
-    shape_index = randint(0, 3)
+    shape_index = randint(0, 2)
     gameOver = False
     basic.show_icon(shapes[shape_index])
     serial.write_line("start")
