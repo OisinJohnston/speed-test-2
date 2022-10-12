@@ -98,22 +98,21 @@ def main():
             name = input("please enter your name: ")
             register(name)
         elif mode == 1:
-            names = [input("please enter the first name: "), input("please enter the second name")]
+            names = [input("please enter the first name: "), input("please enter the second name: ")]
             for name in names:
                 register(name)
 
         ser_micro.write('ready\n'.encode('utf-8'))
         logger.info("laptop -> microbit : 'ready'")
-        
+
         ser_micro.write(f'{mode}\n'.encode('utf-8'))
         logger.info(f"laptop -> microbit : '{mode}'")
-        
+
         resp = readline(ser_micro)
 
-        
         start_time = time()
         resp = readline(ser_micro)
- 
+
         time_taken = time() - start_time
 
         if mode == 1:
