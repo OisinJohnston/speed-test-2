@@ -62,7 +62,7 @@ class DatabaseHandler():
                             FOREIGN KEY (user) REFERENCES users(id)
                        );""")
         cursor.execute("""CREATE TABLE IF NOT EXISTS twoentries(
-                    entryid   INTEGER NOT NULL,
+                    entryid   INTEGER PRIMARY KEY,
                     userone   INTEGER NOT NULL,
                     usertwo   INTEGER NOT NULL,
                     winner    INTEGER NOT NULL,
@@ -149,7 +149,7 @@ class DatabaseHandler():
         player1, player2 = players
         cur = self.get_cursor()
         cur.execute(
-                    "INSERT INTO singleentries(userone, usertwo, winner, timetaken) VALUES (?, ?, ?, ?) ",
+                    "INSERT INTO twoentries(userone, usertwo, winner, timetaken) VALUES (?, ?, ?, ?) ",
                     (player1, player2, winner, timetaken)
                 )
         self.commit()
@@ -175,7 +175,7 @@ async def add_user(request):
         return web.HTTPConflict()
 
 @routes.post('/api/singleentries')
-async def add_entry(request):
+async def add_singleentry(request):
     db = request.app["database"]
     json = await request.json()
 
@@ -190,14 +190,14 @@ async def add_entry(request):
     return web.HTTPCreated()
 
 @routes.post('/api/twoentries')
-async def add_entry(request):
+async def add_twoentry(request):
     db = request.app["database"]
     json = await request.json()
 
     players = [db.get_user_id(name) for name in json["names"]]
     winner = db.get_user_id(json["winner"])
-    timetaken = json["time_taken"]
-    db.add_twoeentry(players, winner, timetaken)
+    timetaken = json["timetaken"]
+    db.add_twoentry(players, winner, timetaken)
     return web.HTTPCreated()
 
 @routes.get('/api/singleentries')

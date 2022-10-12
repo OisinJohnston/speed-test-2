@@ -50,8 +50,8 @@ def register(username):
 def submitsingle(username, time_taken):
     requests.post(BASE_URL + '/api/singleentries', data = json.dumps({'name': username, 'timetaken': time_taken}), headers = HEADERS)
 
-def submittwo(names, winner, time_taken):
-    requests.post(BASE_URL + '/api/twoentries', data = json.dumps({'names': names, 'winner': winner, 'time_taken': time_taken}), headers = HEADERS)
+def submittwo(names, winner, winscore):
+    requests.post(BASE_URL + '/api/twoentries', data = json.dumps({'names': names, 'winner': winner, 'timetaken': winscore}), headers = HEADERS)
 
 def find_comport(pid, vid, baud):
     """returns a serial port"""
@@ -76,6 +76,7 @@ def readline(ser):
     while True:
         line = ser.readline().decode('utf-8')
         if line:
+            logger.info(f"microbit -> laptop : {line}")
             return line
 
 def main():
@@ -104,32 +105,22 @@ def main():
         ser_micro.write('ready\n'.encode('utf-8'))
         logger.info("laptop -> microbit : 'ready'")
         
-        ser_micro.write('mode:{numplayers-1}\n'.encode('utf-8'))
-        logger.info("laptop -> microbit : 'mode:{numplayers-1}'")
+        ser_micro.write(f'{mode}\n'.encode('utf-8'))
+        logger.info(f"laptop -> microbit : '{mode}'")
         
         resp = readline(ser_micro)
-        logger.info(f"microbit -> laptop : '{resp}'")
 
-        if not resp.startswith('start') and resp:
-            ser_micro.write('badresp'.encode('utf-8'))
-            logger.info("laptop -> microbit : 'badresp'")
-            continue
-
+        
         start_time = time()
         resp = readline(ser_micro)
-        logger.info(f"microbit -> laptop : '{resp}'")
-
-        if not resp.startswith('stop') and resp:
-            ser_micro.write('badresp'.encode('utf-8'))
-            logger.info("laptop -> microbit : 'badresp'")
-            continue
-        
+ 
         time_taken = time() - start_time
 
         if mode == 1:
-            winnerindex = int(readline(ser_micro).split(":")[1].strip())
+            winnerindex = int(readline(ser_micro).strip())
+            winnerscore = int(readline(ser_micro).strip())
             winner = names[winnerindex]
-        
+            submittwo(names, winner, winnerscore)
         else:
             submitsingle(name, time_taken)
 
